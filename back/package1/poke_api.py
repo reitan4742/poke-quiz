@@ -5,8 +5,7 @@ import numpy as np
 from io import BytesIO
 import base64
 
-def get_name_from_id(id: int) -> str:
-    res = requests.get("https://pokeapi.co/api/v2/pokemon/" + str(id))
+def get_name(res) -> str:
     json_res = json.loads(res.text)
     species_url = json_res["species"]["url"]
     res_species = requests.get(species_url)
@@ -19,8 +18,7 @@ def get_name_from_id(id: int) -> str:
             break
     return result
 
-def get_image_from_id(id: int) -> bytes:
-    res = requests.get("https://pokeapi.co/api/v2/pokemon/" + str(id))
+def get_image(res) -> bytes:
     json_res = json.loads(res.text)
     image_url = json_res["sprites"]["front_default"]
     res_image = requests.get(image_url)
@@ -33,7 +31,10 @@ def fill_image_to_black(img: bytes) -> bytes:
     alpha_channel = image[:,:, 3]
     filled_image = np.copy(image)
     filled_image[:,:, :3] = np.where(alpha_channel[:,:, np.newaxis] > 0, fill_color, filled_image[:,:, :3])
-    return image_encoded
+    return filled_image
 
 def decode_image(img: bytes) -> str:
-    return base64.b64encode(cv.imencode('.png', filled_image)[1]).decode()
+    return base64.b64encode(img).decode("utf-8")
+
+def decode_shadow_image(img: bytes) -> str:
+    return base64.b64encode(cv.imencode('.png', img)[1]).decode()
