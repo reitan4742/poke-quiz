@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from package1 import poke_api
 
 app = FastAPI()
 
@@ -17,7 +18,17 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def Hello():
+async def hello():
     return {
         "message": "Hello World!"
     }
+
+@app.get("/{id}")
+async def name(id: int):
+    name = poke_api.get_name_from_id(id)
+    return {
+        "name": name
+    }
+
+# @app.get("/quiz")
+# async def quiz():
