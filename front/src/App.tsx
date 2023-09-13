@@ -1,3 +1,4 @@
+import { Route, Routes } from "react-router-dom";
 import Quiz from "./routes/quiz";
 
 function App() {
@@ -5,7 +6,9 @@ function App() {
   return (
   <>
     <h1>hello world</h1>
-    <Quiz />
+    <Routes>
+      <Route path="/quiz" element={<Quiz />}/>
+    </Routes>
   </>
   )
 }
