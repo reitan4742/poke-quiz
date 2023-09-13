@@ -35,13 +35,13 @@ async def handler(request:Request, exc:RequestValidationError):
     return JSONResponse(content={}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 @app.get("/")
-async def hello():
+def hello():
     return {
         "message": "Hello World!"
     }
 
 @app.get("/{id}")
-async def name(id: int):
+def name(id: int):
     res = requests.get(URL+str(id))
     name = poke_api.get_name(res)
     return {
@@ -62,4 +62,11 @@ def quiz():
         "name": name,
         "ans_img": ans_img_encoded,
         "shadow_img": shadow_img_encoded
+    }
+
+@app.get("/all/")
+def name_all():
+    name_list = poke_api.get_name_all()
+    return {
+        "result": name_list
     }

@@ -18,6 +18,14 @@ def get_name(res) -> str:
             break
     return result
 
+def get_name_all() -> list:
+    with open("poke_name.json") as f:
+        name_json = json.load(f)
+    result = []
+    for i in range(len(name_json)):
+        result.append(name_json[i]["ja"]);
+    return result
+
 def get_image(res) -> bytes:
     json_res = json.loads(res.text)
     image_url = json_res["sprites"]["front_default"]
