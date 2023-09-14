@@ -1,8 +1,6 @@
 import axios from "axios";
 import React, { useEffect } from "react";
-import Loading from "../components/Loading";
 import { useDebounce } from "react-use";
-// import Autocomplete from "react-autocomplete-input";
 
 type Quiz = {
   id: number,
@@ -16,12 +14,12 @@ type Suggestion = {
 };
 
 function Quiz() {
-  const [isLoading, setIsLoading] = React.useState(true);
   const [quiz, setQuiz] = React.useState<Quiz>();
   const [value, setValue] = React.useState<string>("");
   const [img, setImg] = React.useState<string>();
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [allPoke, setAllPoke] = React.useState<string[]>([]);
+  const [click, setClick] = React.useState<boolean>(true);
 
   const URL = "http://127.0.0.1:8000";
 
@@ -30,11 +28,9 @@ function Quiz() {
       .then((res) => {
         setQuiz(res.data);
         setImageToImg(res.data.shadow_img);
-        setIsLoading(false);
       })
       .catch((e) => {
         console.error("ERROR",e);
-        setIsLoading(false);
       });
 
     axios.get(`${URL}/all/`)
@@ -50,21 +46,25 @@ function Quiz() {
 
   useDebounce(() => {
     // 絞り込みをして、setする
-    const suggestions: string[] = [];
-    const valueKana = hiraToKana(value);
-    const reg = new RegExp(valueKana);
-    if (value === "") {
-      setSuggestions(suggestions);
-    } else {
-      for (let i = 0; i < allPoke.length; i++) {
-        if(reg.test(allPoke[i])) {
-          suggestions.push(allPoke[i]);
-          if (suggestions.length > 7) {
-            break;
-          }
-        }
+    if (click) {
+      const suggestions: string[] = [];
+      const valueKana = hiraToKana(value);
+      const reg = new RegExp(valueKana);
+      if (value === "") {
         setSuggestions(suggestions);
+      } else {
+        for (let i = 0; i < allPoke.length; i++) {
+          if(reg.test(allPoke[i])) {
+            suggestions.push(allPoke[i]);
+            // if (suggestions.length > 7) {
+            //   break;
+            // }
+          }
+          setSuggestions(suggestions);
+        }
       }
+    } else {
+      setClick(true);
     }
   }, 500, [value]);
 
@@ -73,12 +73,16 @@ function Quiz() {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // setClick(true);
     setValue(event.target.value);
+    setSuggestions([]);
   };
 
   // クリックをした際にiputに文字列を格納する
   const handleSelect = (element: Suggestion) => {
+    setClick(false);
     setValue(element.suggestion);
+    setSuggestions([]);
   };
 
   const setImageToImg = (img: string | undefined) => [
@@ -95,16 +99,40 @@ function Quiz() {
 
   return (
     <>
-      <h1>Who&apos;s that pokemon!?</h1>
-      { isLoading ? <Loading inverted={true} content=""/> : <img height="200px" width="200px" src={img} />}
-      <p>{quiz?.name}</p>
-      <input type="text" value={value} onChange={handleInputChange} />
-      <ul>
-        {suggestions.map((suggestion) => 
-          <li key={suggestion} onClick={() => handleSelect({suggestion})} >{suggestion}</li>
-        )}
-      </ul>
-      <button onClick={submit}>送信</button>
+      <div className="mx-12 my-12 md:flex justify-row">
+        <div className="w-full flex justify-center mb-4 md:mb-0">
+          <div className="bg-sky-400 h-52 w-52 relative">
+            <img src={img} width="202px" height="202px" alt="" />
+            <div className="bg-slate-300 absolute top-52 w-52 h-2.5 border border-black"></div>
+            <div className="bg-slate-300 absolute -top-2 left-0 w-52 h-2.5 border border-black"></div>
+            <div className="bg-slate-300 absolute -left-2 top-0 w-2.5 h-52 border border-black"></div>
+            <div className="bg-slate-300 absolute -right-2 top-0 w-2.5 h-52 border border-black"></div>
+            <img src="../../public/ballLeft.png" className="absolute -top-6 -left-10" width="70px" height="70px"/>
+            <img src="../../public/ballRight.png" className="absolute -top-6 -right-10" width="70px" height="70px"/>
+            <img src="../../public/ballLeft.png" className="absolute -bottom-6 -left-10" width="70px" height="60px"/>
+            <img src="../../public/ballRight.png" className="absolute -bottom-6 -right-10" width="70px" height="60px"/>
+          </div>
+        </div>
+        <div className="flex justify-row w-full mt-12">
+          <div className="w-1/6"></div>
+          <div className="w-4/6 flex justify-center">
+            <div>
+              <input className="focus:border-2 border-amber-300 outline-none w-full mb-2 h-8 text-2xl rounded" type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
+              <div className="w-full max-h-36 overflow-y-scroll">
+                <ul>
+                  {suggestions.map((suggestion) => 
+                    // <li className="bg- w-48" key={suggestion} onClick={() => handleSelect({suggestion})} >{suggestion}</li>
+                    <li className="bg-white w-full h-8 text-2xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
+                    )}
+                </ul>
+              </div>
+            </div>
+            <div className="">
+              <button className="ml-2 w-16 h-8 bg-amber-300 hover:bg-amber-400 text-white font-bold rounded" onClick={submit}>送信</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

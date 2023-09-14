@@ -1,11 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import Quiz from "./routes/quiz";
+import "./App.css";
 
 function App(): JSX.Element{
 
   return (
     <>
-      <h1>hello world</h1>
       <Routes>
         <Route path="/quiz" element={<Quiz />}/>
       </Routes>
