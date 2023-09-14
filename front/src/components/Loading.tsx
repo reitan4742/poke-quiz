@@ -1,11 +1,22 @@
 import { Loader, Dimmer } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
-function Loading({ inverted = true, content=""}) {
+type Loading = {
+    inverted: boolean,
+    content: string
+};
+
+function Loading(props: Loading) {
   return (
-    <Dimmer inverted={inverted} action="true">
-      <Loader content={content} />
+    <Dimmer inverted={props.inverted} action="true">
+      <Loader content={props.content} />
     </Dimmer>
-  )
+  );
 }
+
+Loading.propTypes = {
+  inverted: PropTypes.bool,
+  content: PropTypes.string
+};
 
 export default Loading;
