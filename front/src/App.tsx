@@ -1,14 +1,18 @@
 import { Route, Routes } from "react-router-dom";
-import Quiz from "./routes/quiz";
+import Quiz from "./routes/Quiz";
 import "./App.css";
+import Footer from "./components/Footer"
+import Header from "./components/Header";
 
 function App(): JSX.Element{
 
   return (
     <>
-      <Routes>
-        <Route path="/quiz" element={<Quiz />}/>
-      </Routes>
+      <Header />
+        <Routes>
+          <Route path="/quiz" element={<Quiz />}/>
+        </Routes>
+      <Footer />
     </>
   );
 }

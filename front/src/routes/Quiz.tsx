@@ -99,7 +99,7 @@ function Quiz() {
 
   return (
     <>
-      <div className="mx-12 my-12 md:flex justify-row">
+      <div className="mx-12 mt-24 md:flex justify-row">
         <div className="w-full flex justify-center mb-4 md:mb-0">
           <div className="bg-sky-400 h-52 w-52 relative">
             <img src={img} width="202px" height="202px" alt="" />
@@ -117,7 +117,7 @@ function Quiz() {
           <div className="w-1/6"></div>
           <div className="w-4/6 flex justify-center">
             <div>
-              <input className="focus:border-2 border-amber-300 outline-none w-full mb-2 h-8 text-2xl rounded" type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
+              <input className="focus:border-2 border-logo outline-none w-full mb-2 h-8 text-2xl rounded" type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
               <div className="w-full max-h-36 overflow-y-scroll">
                 <ul>
                   {suggestions.map((suggestion) => 
@@ -127,9 +127,7 @@ function Quiz() {
                 </ul>
               </div>
             </div>
-            <div className="">
-              <button className="ml-2 w-16 h-8 bg-amber-300 hover:bg-amber-400 text-white font-bold rounded" onClick={submit}>送信</button>
-            </div>
+            <button className="text-darkblue ml-2 w-16 h-8 bg-logo hover:bg-amber-400 font-bold rounded" onClick={submit}>送信</button>
           </div>
         </div>
       </div>
