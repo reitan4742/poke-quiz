@@ -9,7 +9,8 @@ module.exports = {
       colors: {
         darkblue: "#222653ff",
         lightblue: "#3b88b6ff",
-        frame: "#a6afc8ff"
+        frame: "#a6afc8ff",
+        logo: "#ffcd00ff"
       }
     },
   },
