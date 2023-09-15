@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDebounce } from "react-use";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type Quiz = {
   id: number,
@@ -20,10 +21,16 @@ function Quiz() {
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [allPoke, setAllPoke] = React.useState<string[]>([]);
   const [click, setClick] = React.useState<boolean>(true);
+  const [disabled, setDisabled] = React.useState<boolean>(false);
 
   const URL = "http://127.0.0.1:8000";
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    if (location.state === null) {
+      navigate("/");
+    }
     axios.get(`${URL}/quiz/`)
       .then((res) => {
         setQuiz(res.data);
@@ -56,9 +63,6 @@ function Quiz() {
         for (let i = 0; i < allPoke.length; i++) {
           if(reg.test(allPoke[i])) {
             suggestions.push(allPoke[i]);
-            // if (suggestions.length > 7) {
-            //   break;
-            // }
           }
           setSuggestions(suggestions);
         }
@@ -66,7 +70,7 @@ function Quiz() {
     } else {
       setClick(true);
     }
-  }, 500, [value]);
+  }, 200, [value]);
 
   const hiraToKana = (hira: string) => {
     return hira.replace(/[\u3042-\u3093]/g, m => String.fromCharCode(m.charCodeAt(0) + 96));
@@ -92,9 +96,15 @@ function Quiz() {
   const submit = () => {
     if (value === quiz?.name) {
       setImageToImg(quiz?.ans_img);
+      setDisabled(true);
     } else {
       console.log("faild");
     }
+  };
+
+  const jump = () => {
+    // window.location.reload();
+    navigate("/");
   };
 
   return (
@@ -113,21 +123,36 @@ function Quiz() {
             <img src="../../public/ballRight.png" className="absolute -bottom-6 -right-10" width="70px" height="60px"/>
           </div>
         </div>
-        <div className="flex justify-row w-full mt-12">
-          <div className="w-1/6"></div>
-          <div className="w-4/6 flex justify-center">
-            <div>
-              <input className="focus:border-2 border-logo outline-none w-full mb-2 h-8 text-2xl rounded" type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
-              <div className="w-full max-h-36 overflow-y-scroll">
-                <ul>
-                  {suggestions.map((suggestion) => 
-                    // <li className="bg- w-48" key={suggestion} onClick={() => handleSelect({suggestion})} >{suggestion}</li>
-                    <li className="bg-white w-full h-8 text-2xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
-                    )}
-                </ul>
+        <div className="flex flex-col w-full">
+          <div className="flex justify-row w-full mt-12">
+            <div className="w-1/6"></div>
+            <div className="w-4/6 flex justify-center">
+              <div>
+                <input className="focus:border-2 border-logo outline-none w-full mb-2 h-8 text-2xl rounded" disabled={disabled} type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
+                <div className="w-full max-h-36 overflow-y-scroll">
+                  <ul>
+                    {suggestions.map((suggestion) => 
+                      // <li className="bg- w-48" key={suggestion} onClick={() => handleSelect({suggestion})} >{suggestion}</li>
+                      <li className="bg-white w-full h-8 text-2xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
+                      )}
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <button className="text-darkblue ml-2 w-16 h-8 bg-logo hover:bg-amber-400 font-bold rounded" disabled={disabled} onClick={submit}>解答</button>
               </div>
             </div>
-            <button className="text-darkblue ml-2 w-16 h-8 bg-logo hover:bg-amber-400 font-bold rounded" onClick={submit}>送信</button>
+          </div>
+          <div className="w-full mt-12 flex justify-row">
+            <div className="w-1/6"></div>
+            <div className="flex justify-center w-4/6">
+              <div className="w-full">
+                <p hidden={!disabled} className="text-logo text-center text-3xl">It's {quiz?.name}!!!!!!!!</p>
+              </div>
+              <div>
+                <button hidden={!disabled} className="text-darkblue ml-2 w-24 h-24 bg-logo hover:bg-amber-400 font-bold rounded" onClick={jump}>次の問題へ</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
