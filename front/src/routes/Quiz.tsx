@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDebounce } from "react-use";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import Loading from "../components/Loading";
 
 type Quiz = {
   id: number,
@@ -17,38 +18,58 @@ type Suggestion = {
 function Quiz() {
   const [quiz, setQuiz] = React.useState<Quiz>();
   const [value, setValue] = React.useState<string>("");
-  const [img, setImg] = React.useState<string>();
+  const [img, setImg] = React.useState<string>("");
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [allPoke, setAllPoke] = React.useState<string[]>([]);
   const [click, setClick] = React.useState<boolean>(true);
   const [disabled, setDisabled] = React.useState<boolean>(false);
+  const [faild, setFaild] = React.useState<boolean>(false);
+  const [button, setButton] = React.useState<boolean>(false);
+  const [load, setLoad] = React.useState<boolean>(true);
+  const [problemId, setProblemId] = React.useState<number>();
 
   const URL = "http://127.0.0.1:8000";
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
 
   useEffect(() => {
-    if (location.state === null) {
+    const onUnload = () => {
+      navigate("/");
+    };
+    window.addEventListener("beforeunload", onUnload);
+    try {
+      if (location.state.problem_id !== Number(params.id)) {
+        navigate("/");
+      }
+      setProblemId(location.state.problem_id);
+    } catch (error) {
       navigate("/");
     }
+    setLoad(true);
+    setValue("");
+    setDisabled(false);
+    setButton(false);
+    setFaild(false);
     axios.get(`${URL}/quiz/`)
       .then((res) => {
         setQuiz(res.data);
         setImageToImg(res.data.shadow_img);
+        setLoad(false);
       })
       .catch((e) => {
         console.error("ERROR",e);
+        setLoad(false);
       });
 
     axios.get(`${URL}/all/`)
       .then((res) => {
         setAllPoke(res.data.result);
-        // setSuggestions(res.data.result);
       })
       .catch((e) => {
         console.error("ERROR",e);
       });
-  },[]);
+  },[location.state, navigate, params]);
 
 
   useDebounce(() => {
@@ -94,25 +115,46 @@ function Quiz() {
   ];
 
   const submit = () => {
+    setButton(true);
+    setImageToImg(quiz?.ans_img);
     if (value === quiz?.name) {
-      setImageToImg(quiz?.ans_img);
       setDisabled(true);
     } else {
-      console.log("faild");
+      setFaild(true);
     }
   };
 
-  const jump = () => {
-    // window.location.reload();
-    navigate("/");
+  const correct = () => {
+    let newCorrect_num: number;
+    if (disabled) {
+      newCorrect_num = location.state.correct_num + 1;
+    } else {
+      newCorrect_num = location.state.correct_num;
+    }
+    if (location.state.problem_id === 10) {
+      navigate("/result", {
+        state: {
+          problem_id: location.state.problem_id + 1,
+          correct_num: newCorrect_num
+        }});
+    } else {
+      navigate(`/quiz/${location.state.problem_id + 1}`, { 
+        state: {
+          problem_id: location.state.problem_id + 1,
+          correct_num: newCorrect_num
+        }, replace: true });
+    }
   };
 
   return (
     <>
-      <div className="mx-12 mt-24 md:flex justify-row">
+      <div className="mt-16 mx-12">
+        <p className="bg-logo text-darkblue text-2xl rounded w-20 text-center">{problemId}/10</p>
+      </div>
+      <div className="mx-12 mt-12 md:flex justify-row">
         <div className="w-full flex justify-center mb-4 md:mb-0">
           <div className="bg-sky-400 h-52 w-52 relative">
-            <img src={img} width="202px" height="202px" alt="" />
+            { load ? <Loading inverted={false} content={""} /> : <img className="m-0" src={img} width="202px" height="202px" /> }
             <div className="bg-slate-300 absolute top-52 w-52 h-2.5 border border-black"></div>
             <div className="bg-slate-300 absolute -top-2 left-0 w-52 h-2.5 border border-black"></div>
             <div className="bg-slate-300 absolute -left-2 top-0 w-2.5 h-52 border border-black"></div>
@@ -132,9 +174,8 @@ function Quiz() {
                 <div className="w-full max-h-36 overflow-y-scroll">
                   <ul>
                     {suggestions.map((suggestion) => 
-                      // <li className="bg- w-48" key={suggestion} onClick={() => handleSelect({suggestion})} >{suggestion}</li>
                       <li className="bg-white w-full h-8 text-2xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
-                      )}
+                    )}
                   </ul>
                 </div>
               </div>
@@ -143,14 +184,16 @@ function Quiz() {
               </div>
             </div>
           </div>
-          <div className="w-full mt-12 flex justify-row">
+          <div className="w-full mt-12 flex justify-row mb-24">
             <div className="w-1/6"></div>
             <div className="flex justify-center w-4/6">
               <div className="w-full">
-                <p hidden={!disabled} className="text-logo text-center text-3xl">It's {quiz?.name}!!!!!!!!</p>
+                <p hidden={!disabled} className="text-logo text-center text-2xl">正解</p>
+                <p hidden={!faild} className="text-logo text-center text-2xl">不正解</p>
+                <p hidden={!faild} className="text-logo text-center text-2xl">正解は、{quiz?.name}</p>
               </div>
               <div>
-                <button hidden={!disabled} className="text-darkblue ml-2 w-24 h-24 bg-logo hover:bg-amber-400 font-bold rounded" onClick={jump}>次の問題へ</button>
+                <button hidden={!button} className="text-darkblue ml-2 w-24 h-8 bg-logo hover:bg-amber-400 font-bold rounded" onClick={correct}>次の問題へ</button>
               </div>
             </div>
           </div>
