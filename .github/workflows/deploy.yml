@@ -34,7 +34,6 @@ jobs:
          unzip awscliv2.zip
          sudo ./aws/install --update
          aws --version
-
      # AWS CLIにキーを設定をする
      - name: AWS set Credentials
        uses: aws-actions/configure-aws-credentials@v1
@@ -45,18 +44,15 @@ jobs:
 
      # デプロイする
      - name: Deploy
-       env:
-         AWS_EC2_METADATA_DISABLED: true
        run: |
-       
          # SSHのセキュリティグループを開放する
-         aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+         sudo aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
          # SSH接続して、git pullする
          echo "${{ secrets.GIT_PRIVATE_KEY }}" > private_key
          chmod 600 private_key
          ssh -oStrictHostKeyChecking=no ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} -i private_key "cd poke-quiz && git pull origin main"
          # 処理を実行
          cd front && npm i && npm run build && npx forever start server.cjs
-         cd back && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && uvicorn main:app
+         cd back && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && uvicorn main:app 
          # SSHのセキュリティグループを閉じる
-         aws ec2 revoke-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+         sudo aws ec2 revoke-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
