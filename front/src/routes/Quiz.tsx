@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import { useDebounce } from "react-use";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
+import left from "../assets/images/ballLeft.png";
+import right from "../assets/images/ballRight.png";
 
 type Quiz = {
   id: number,
@@ -159,10 +161,10 @@ function Quiz() {
             <div className="bg-slate-300 absolute -top-2 left-0 w-52 h-2.5 border border-black"></div>
             <div className="bg-slate-300 absolute -left-2 top-0 w-2.5 h-52 border border-black"></div>
             <div className="bg-slate-300 absolute -right-2 top-0 w-2.5 h-52 border border-black"></div>
-            <img src="../../public/ballLeft.png" className="absolute -top-6 -left-10" width="70px" height="70px"/>
-            <img src="../../public/ballRight.png" className="absolute -top-6 -right-10" width="70px" height="70px"/>
-            <img src="../../public/ballLeft.png" className="absolute -bottom-6 -left-10" width="70px" height="60px"/>
-            <img src="../../public/ballRight.png" className="absolute -bottom-6 -right-10" width="70px" height="60px"/>
+            <img src={left} className="absolute -top-6 -left-10" width="70px" height="70px"/>
+            <img src={right} className="absolute -top-6 -right-10" width="70px" height="70px"/>
+            <img src={left} className="absolute -bottom-6 -left-10" width="70px" height="60px"/>
+            <img src={right} className="absolute -bottom-6 -right-10" width="70px" height="60px"/>
           </div>
         </div>
         <div className="flex flex-col w-full">
