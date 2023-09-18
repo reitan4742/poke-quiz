@@ -12,7 +12,7 @@ function Ressult() {
         if (location.state.problem_id !== 11) {
             navigate("/");        
         }
-        setResult(location.state.correct_num);
+        setResult(location.state.correct_num * 10);
     } catch (error) {
         navigate("/");
     }
