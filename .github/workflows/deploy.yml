@@ -3,8 +3,9 @@ name: CI
 
 # トリガーとなる GitHub イベント
 on:
-  # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 # ワークフローの実行処理
 jobs:
