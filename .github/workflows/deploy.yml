@@ -45,6 +45,8 @@ jobs:
 
      # デプロイする
      - name: Deploy
+       env:
+         AWS_EC2_METADATA_DISABLED: true
        run: |
        
          # SSHのセキュリティグループを開放する
