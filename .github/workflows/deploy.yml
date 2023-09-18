@@ -34,6 +34,7 @@ jobs:
          unzip awscliv2.zip
          sudo ./aws/install --update
          aws --version
+         aws ec2 run-instances --image-id ami-12345678 --instance-type t2.micro --key-name your-key-name --user-data ~/configure_ec2_metadata.sh
 
      # AWS CLIにキーを設定をする
      - name: AWS set Credentials
