@@ -47,7 +47,7 @@ jobs:
      - name: Deploy
        run: |
        
-         sudo aws ec2 run-instances --image-id ami-12345678 --instance-type t2.micro ~/configure_ec2_metadata.sh
+         sudo aws ec2 run-instances --image-id ami-12345678 --instance-type t2.micro /home/ec2-user/configure_ec2_metadata.sh
          # SSHのセキュリティグループを開放する
          sudo aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
