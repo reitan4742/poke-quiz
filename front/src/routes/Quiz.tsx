@@ -30,7 +30,7 @@ function Quiz() {
   const [load, setLoad] = React.useState<boolean>(true);
   const [problemId, setProblemId] = React.useState<number>();
 
-  const URL = "http://127.0.0.1:8000";
+  const URL = "http://127.0.0.1:8000"
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -140,7 +140,7 @@ function Quiz() {
           correct_num: newCorrect_num
         }});
     } else {
-      navigate(`/quiz/${location.state.problem_id + 1}`, { 
+      navigate(`/quiz/${location.state.problem_id + 1}`, {
         state: {
           problem_id: location.state.problem_id + 1,
           correct_num: newCorrect_num
@@ -172,11 +172,11 @@ function Quiz() {
             <div className="w-1/6"></div>
             <div className="w-4/6 flex justify-center">
               <div>
-                <input className="focus:border-2 border-logo outline-none w-full mb-2 h-8 text-2xl rounded" disabled={disabled} type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
+                <input className="focus:border-2 border-logo outline-none w-full mb-2 h-8 text-xl rounded" disabled={disabled} type="text" value={value} onChange={handleInputChange} autoComplete="off"/>
                 <div className="w-full max-h-36 overflow-y-scroll">
                   <ul>
-                    {suggestions.map((suggestion) => 
-                      <li className="bg-white w-full h-8 text-2xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
+                    {suggestions.map((suggestion) =>
+                      <li className="bg-white w-full h-8 text-xl" key={suggestion}><button className="h-full hover:bg-slate-300 w-full text-left" onClick={() => handleSelect({suggestion})}>{suggestion}</button></li>
                     )}
                   </ul>
                 </div>
@@ -188,14 +188,14 @@ function Quiz() {
           </div>
           <div className="w-full mt-12 flex justify-row mb-24">
             <div className="w-1/6"></div>
-            <div className="flex justify-center w-4/6">
-              <div className="w-full">
-                <p hidden={!disabled} className="text-logo text-center text-2xl">正解</p>
-                <p hidden={!faild} className="text-logo text-center text-2xl">不正解</p>
-                <p hidden={!faild} className="text-logo text-center text-2xl">正解は、{quiz?.name}</p>
-              </div>
-              <div>
+            <div className="flex flex-col w-4/6">
+              <div className="w-full flex justify-center">
                 <button hidden={!button} className="text-darkblue ml-2 w-24 h-8 bg-logo hover:bg-amber-400 font-bold rounded" onClick={correct}>次の問題へ</button>
+              </div>
+              <div className="w-full">
+                <p hidden={!disabled} className="text-logo text-center text-xl">正解</p>
+                <p hidden={!faild} className="text-logo text-center text-xl">不正解</p>
+                <p hidden={!faild} className="text-logo text-center text-xl">正解は、{quiz?.name}</p>
               </div>
             </div>
           </div>
